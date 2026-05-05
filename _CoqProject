@@ -19,6 +19,8 @@ theories/Complexity/UpToCPoly.v
 theories/HierarchyTheorem/AbstractTimeHierarchyTheorem.v
 theories/HierarchyTheorem/TimeHierarchyTheorem.v
 
+theories/L/Prelim/ARS.v
+theories/L/ComputableTime.v
 theories/L/ComparisonTimeBoundDerivation.v
 
 

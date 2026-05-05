@@ -1,5 +1,6 @@
 From Undecidability.L Require Import Tactics.LTactics Datatypes.LUnit Datatypes.LBool Datatypes.LNat.
 Require Import BinNums.
+Require Import Complexity.L.ComputableTime.
 Require Import Undecidability.L.Tactics.GenEncode.
 
 (** ** Encoding of positive binary numbers *)
