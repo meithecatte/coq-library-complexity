@@ -71,6 +71,8 @@ theories/L/TM/TMflatten.v
 
 
 theories/Libs/PSLCompat.v
+theories/Libs/MoreBase.v
+theories/Libs/MoreList.v
 
 
 theories/Libs/Pigeonhole.v

@@ -1,5 +1,6 @@
 Require Import MetaCoq.Template.All Strings.Ascii.
 From Complexity.L Require Export Prelim.ARS.
+From Complexity.Libs Require Export MoreBase.
 From Undecidability.L.Tactics Require Export Computable ComputableTactics.
 From Undecidability.L.Tactics Require Import Lproc Lsimpl Lbeta Lrewrite.
 Import L_Notations.
@@ -259,6 +260,12 @@ Proof.
   destruct Hf. assumption.
 Defined. (* because ? *)
 
+Lemma extT_rel_helper X `(H:encodable X) (x:X) xT (inst : computableTime x xT) (R: term -> term -> Prop) u:
+  R (enc x) u -> R (@extT _ _ _ _ inst) u.
+Proof.
+  now rewrite extT_is_enc.
+Qed.
+
 Lemma computesTimeTyArr_helper t1 t2 (tt1 : TT t1) (tt2 : TT t2) f fInt time fT:
   proc fInt
   ->
@@ -399,6 +406,16 @@ Proof.
   intros ? []. eexists. eapply computesTime_timeLeq. all:easy.
 Qed.
 
+Lemma rho_correctPow s t : proc s -> lambda t -> rho s t >(3) s (rho s) t.
+Proof.
+  intros. unfold rho,r. change 3 with (1+2). apply pow_add.
+  eexists;split. apply (rcomp_1 step). now inv H0.
+  cbn. closedRewrite. apply pow_step_congL;[|reflexivity]. now Lbeta.  
+Qed.
+
+Lemma LrewriteTime_helper_index:
+forall [s t : term] [i i' : nat], i = i' -> s >(<=i) t -> s >(<=i') t.
+Proof. intros. now subst. Qed.
 (* ** Tactics *)
 Import Intern.
 
@@ -451,6 +468,31 @@ Ltac find_Lrewrite_lemma ::=
     | |- ?R ?s _ => has_no_evar s;solve [eauto 20 with Lrewrite nocore]
   end.
 
+Ltac Lproc'' :=
+  once lazymatch goal with
+  | |- lambda (@extT ?X ?tt ?x ?f ?H) => exact_no_check (proc_lambda (@proc_extT X tt x f H))
+  | |- bound ?k (@extT ?X ?tt ?x ?f ?H) =>
+    exact_no_check (closed_dcl_x k (proc_closed (@proc_extT X tt x f H)))
+  | |- _ => Lproc'
+  end.
+
+(* add case for extT *)
+Ltac Lproc ::=
+  lazymatch goal with
+  | |- proc (app _ _) => fail
+  | |- proc (@enc ?t ?H ?x) => exact_no_check (@proc_enc t H x)
+  | |- proc (@ext ?X ?tt ?x ?H) => exact_no_check (@proc_ext X tt x H)
+  | |- proc (@extT ?X ?tt ?x ?f ?H) => exact_no_check (@proc_extT X tt x f H)
+
+  | |- proc _ => refine (conj _ _);[|solve [Lproc]];Lproc
+                                    
+  | |- closed _ => solve [repeat' Lproc'']
+                     
+  | |- lambda (app _ _) => fail
+  | |- lambda _ => repeat' Lproc''
+  | s := ?t |- ?p ?s => change (p t);Lproc
+         end.
+
 (* handle redLe as well *)
 Ltac useFixHypo ::=
   once lazymatch goal with
@@ -478,6 +520,39 @@ Ltac useFixHypo ::=
       change v with (@extT _ ty _ _ (Build_computableTime IHInts)) in IHR;exact (proj1 IHR)
     end
   end.
+
+(*  Handle evalLe and evalIn in addition to eval *)
+Ltac recStepInit P ::=
+   once lazymatch eval lazy [P] in P with
+   | rho ?rP =>
+     once lazymatch goal with
+     | |- evalLe _ _ _ => 
+       let rec loop := 
+           once lazymatch goal with
+           | |- ARS.pow step _ (app P _) _ =>unfold P;apply rho_correctPow;now Lproc
+           | |- ARS.pow step _ (app _ _) _ => eapply pow_step_congL;[loop|reflexivity]
+           end
+       in
+       eapply evalle_trans;[apply pow_redLe_subrelation;loop|fold P; unfold rP]
+     | |- evalIn _ _ _ =>
+       let rec loop := 
+           once lazymatch goal with
+           | |- ARS.pow step _ (app P _) _ =>unfold P;apply rho_correctPow;now Lproc
+           | |- ARS.pow step _ (app _ _) _ => eapply pow_step_congL;[loop|reflexivity]
+           end
+       in
+       eapply evalIn_trans;[loop|fold P; unfold rP]
+     | |- eval _ _ =>
+       let rec loop := 
+           once lazymatch goal with
+           | |- ARS.star step (app P _) _ =>unfold P;apply rho_correct;now Lproc
+           | |- ARS.star step (app _ _) _ => eapply star_step_app_proper;[loop|reflexivity]
+           end
+       in
+       eapply eval_helper;[loop|fold P; unfold rP]
+     end
+   end.
+
 
 (* handle extT as well *)
 Ltac LrewriteTime_solveGoals ::=
@@ -523,6 +598,80 @@ end.
 
 Ltac Lrewrite ::= Lrewrite_wrapper Lrewrite'.
 Ltac LrewriteSimpl ::= Lrewrite_wrapper ltac:(idtac;LrewriteSimpl').
+
+Ltac appTimeHelper tt:=
+ (* As we might build n using the projection on an on-ty-fly constructed computableTime-instance, we mustavoid it to depend on the proof that the time function is correct*)
+  (once lazymatch goal with
+  | |- app (@extT _ (_ ~> _ ) _ _ ?fInts) (@extT _ _ _ _ ?xInts) >(<= _ ) _
+    => Ltransitivity;[refine (LrewriteTime_helper_index _ (extTApp fInts xInts));[unfold evalTime;reflexivity]| ]
+    end ).
+
+(* we need to patch LrewriteSimpl as well, in order to properly handle extT *)
+(* version of Lrewrite that des the beta-steps as well *)
+(* clears the flag iff head is not applied to values *)
+Ltac LrewriteSimpl'' canReduceFlag ::=
+  idtac;
+  (* time "LrewriteSimpl'" *) 
+  once lazymatch goal with
+  | |- _ (@ext _ (@TyB _ ?reg) _ _) _ => refine (ext_rel_helper _ _) (* for backwards-compability, if used on term with hole*)
+  | |- _ (@extT _ (@TyB _ ?reg) _ _ _) _ => refine (extT_rel_helper _ _) (* for backwards-compability, if used on term with hole*)
+  | |- ?R ?s _  => has_no_evar s;(* idtac "recurse to" s; *)
+
+  repeat' (idtac;
+    lazymatch goal with
+    | |- _ (lam _) _ => fail
+    | |- _ (enc _) _ => fail
+      
+    (* use correctness lemmatas of int here*)  
+    | |- L.app (@ext _ (_ ~> _ ) _ _) (ext _) >* _ => Ltransitivity;[apply extApp|]
+    | |- L.app (@ext _ (_ ~> _ ) _ ?ints) (@enc _ ?reg ?x) >* ?v =>
+      change (app (@ext _ _ _ ints) (@ext _ _ _ (reg_is_ext reg x)) >* v);
+      Ltransitivity;[refine (extApp _ _)|]
+
+    (* NEW: same as above, but extT and redLe *)
+    | |- L.app (@extT _ (_ ~> _ ) _ _ ?fInts) (@extT _ _ _ _ ?xInts) >(<= _ ) _ => appTimeHelper tt
+    | |- L.app (@extT _ (_ ~> _ ) _ _ ?ints) (@enc _ ?reg ?x) >(<= ?k ) ?v =>
+      change (L.app (@extT _ _ _ _ ints) (@extT _ _ _ _ (reg_is_extT reg x)) >(<= k) v); appTimeHelper tt
+
+    (* clean up goal *)
+    | |- _ (@ext _ (@TyB _ ?reg) _ _) _ => refine (ext_rel_helper _ _)
+    | |- _ (@extT _ (@TyB _ ?reg) _ _ _) _ => refine (extT_rel_helper _ _)  
+
+      (* last reduce recursively, and then try to apply rewrite lemmas o Lbeta *)
+    | |- ?R (L.app _ _) _ =>
+      (* idtac "at app0"; *)
+      let progressFlag := fresh in
+      let recCanReduceFlag := fresh  in
+      let tmp := fresh in
+      assert (progressFlag:=tt);
+      assert (tmp:=tt);
+      assert (recCanReduceFlag:=tt);
+      try (LrewriteSimpl_appR R;[solve [LrewriteSimpl'' tmp;Lreflexivity]|(* idtac"didR"; *)try clear progressFlag]);
+      try clear tmp; (*we don't care for RHS*)
+      try (LrewriteSimpl_appL R;[solve [LrewriteSimpl'' canReduceFlag;Lreflexivity]|(* idtac"didL"; *)try clear progressFlag]);
+      (* idtac "at app"; *)
+      lazymatch goal with
+      | |- ?R (L.app ?s ?t) _ =>
+        (* idtac "still app" s t; *)
+        let maybeBeta _ := lazymatch s with lam _ => Lbeta end in
+        try (maybeBeta ();try clear progressFlag);
+        tryif (tryif is_var recCanReduceFlag then isValue t else fail)
+          then
+            try (
+              Ltransitivity;[solve [find_Lrewrite_lemma|useFixHypo]|];
+              try clear progressFlag (* we did something *);
+
+              (* We mus re-evaluate if we produce an assumption where s rewrite could apply*)
+              try (clear canReduceFlag;pose (canReduceFlag:=tt))
+            )
+          else clear canReduceFlag
+      end;
+      (* fail if no progress *)
+      tryif is_var progressFlag then (* lazymatch goal with |- ?H => idtac "leaving behind" H end; *)fail else idtac
+(*     | |- ?H => fail 1000 "unexpected goal" H  *)  
+    | |- ?H => (* idtac "fallback" H; *)Ltransitivity;[solve[find_Lrewrite_lemma]|]  
+    end)
+  end.
 
 Ltac ugly_fix_fix2 IH n :=
   (* we must destruct to allow the fix to reduce...*)
@@ -620,7 +769,6 @@ Ltac cstepTime extractSimp :=
            | 0 => idtac
            end) in
       step n;
-        
       let IH := fresh "IH" P in
       ugly_fix_fix2 IH recArg;
         let rec loop n := (* destruct the struct-recursive argument*)
@@ -687,7 +835,7 @@ Ltac extractSimple ::=
   lazymatch goal with
   | |- eval _ _ => extractCorrectCrush
   | |- evalLe _ _ _ => extractCorrectCrush
-  | |- evalIn _ _ _ => (*Lsimpl_old;*)fail "evalIn does not support full Lrewrite and should only occur when simplifying rho/recursion"
+  | |- evalIn _ _ _ => repeat progress Lbeta; Lreflexivity
   | |- ?G => idtac "cstep found unexpected" G 
   end;try (idtac;[idtac "could not simplify some occuring term, shelved instead"];shelve).
 
@@ -711,6 +859,17 @@ Ltac computable_using_noProof Lter ::=
     let t' := (eval hnf in t) in
     let h := visibleHead t' in
     try unfold h; computable_prepare t; infer_instancesT
+  end.
+
+Ltac extractAs s ::=
+  once lazymatch goal with
+  | [ H : @extracted _ |- _ ] => idtac "WARNING: extraction is buggy if used while a term of type 'extracted _' is in Context"
+  | [ |- computable ?t ] =>
+    (run_template_program (tmExtract None t)
+                         (fun e =>  pose (s:= ( e : extracted t))))
+  | [ |- computableTime ?t _] =>
+    (run_template_program (tmExtract None t)
+                         (fun e => pose (s:= ( e : extracted t))))
   end.
 
 Tactic Notation "extract" "constructor" :=
