@@ -1,3 +1,4 @@
+Require Import Complexity.L.ComputableTime.
 From Undecidability.L.Tactics Require Import LTactics GenEncode.
 
 Section sig.

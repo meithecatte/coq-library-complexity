@@ -51,6 +51,12 @@ theories/L/AbstractMachines/FlatPro/SizeAnalysisUnfoldClos.v
 #L/AbstractMachines/FlatPro/Computable/HeapStep.v
 theories/L/AbstractMachines/FlatPro/Computable/LPro.v
 
+theories/L/Datatypes/LProd.v
+theories/L/Datatypes/LSum.v
+theories/L/Datatypes/LBool.v
+theories/L/Datatypes/LNat.v
+theories/L/Datatypes/LOptions.v
+theories/L/Datatypes/LTerm.v
 theories/L/Datatypes/LBinNums.v
 theories/L/Datatypes/LComparison.v
 theories/L/Datatypes/LDepPair.v
@@ -59,6 +65,8 @@ theories/L/Functions/BinNums.v
 theories/L/Functions/BinNumsAdd.v
 theories/L/Functions/BinNumsSub.v
 theories/L/Functions/BinNumsCompare.v
+theories/L/Functions/Encoding.v
+theories/L/Functions/Decoding.v
 
 theories/L/TM/TMflat.v
 theories/L/TM/CompCode.v

@@ -1,8 +1,6 @@
-From Undecidability.L.Tactics Require Import LTactics.
-From Undecidability.L.Datatypes Require Import LProd LTerm.
-
-From Undecidability.L Require Import Functions.Encoding.
-From Complexity Require Import Complexity.Monotonic .
+From Complexity.L.Datatypes Require Import LProd LTerm LOptions.
+From Complexity.L Require Import Functions.Encoding.
+From Complexity Require Import Complexity.Monotonic L.ComputableTime.
 
 Class encodableP `(X:Type) `{encodable X}: Type :=
   {
@@ -60,6 +58,8 @@ Proof.
   cbn. [c]:exact (c__regP X + c__regP Y + 4). unfold c. nia.
 Qed.
 
+(* TODO: Lists *)
+(*
 From Undecidability.L.Datatypes Require Import Lists.
 
 #[export]
@@ -75,8 +75,7 @@ Proof.
   cbn. [c]:exact (c__regP X + 17). unfold c, c__listsizeCons, c__listsizeNil.
   induction l;cbn. all:nia.
 Qed.
-
-Import LOptions.
+ *)
 
 #[export]
 Instance regP_option X `{encodableP X}: encodableP (option X).
