@@ -22,6 +22,8 @@ theories/HierarchyTheorem/TimeHierarchyTheorem.v
 
 theories/L/ComputableTime.v
 theories/L/ComparisonTimeBoundDerivation.v
+theories/L/Util/Subterm.v
+theories/L/Util/InformativeEval.v
 
 
 theories/L/AbstractMachines/TM_LHeapInterpreter/LMBounds.v
@@ -33,6 +35,7 @@ theories/L/AbstractMachines/UnfoldHeap.v
 theories/L/AbstractMachines/FunctionalDefinitions.v
 theories/L/AbstractMachines/LambdaDepth.v
 theories/L/AbstractMachines/UnfoldTailRec.v
+theories/L/AbstractMachines/LargestVar.v
 theories/L/AbstractMachines/Computable/Shared.v
 theories/L/AbstractMachines/Computable/HeapMachine.v
 theories/L/AbstractMachines/Computable/SubstMachine.v
@@ -42,6 +45,10 @@ theories/L/AbstractMachines/Computable/UnivDecTime.v
 theories/L/AbstractMachines/Computable/LargestVar.v
 theories/L/AbstractMachines/Computable/EvalForTime.v
 theories/L/AbstractMachines/Computable/EvalForTimeBool.v
+theories/L/AbstractMachines/FlatPro/ProgramsDef.v
+theories/L/AbstractMachines/FlatPro/Programs.v
+theories/L/AbstractMachines/FlatPro/LM_heap_def.v
+theories/L/AbstractMachines/FlatPro/LM_heap_correct.v
 theories/L/AbstractMachines/FlatPro/Computable/Compile.v
 theories/L/AbstractMachines/FlatPro/Computable/Decompile.v
 theories/L/AbstractMachines/FlatPro/SizeAnalysisStep.v

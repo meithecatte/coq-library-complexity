@@ -1,6 +1,6 @@
 From Complexity.Libs Require Import ARS.
 From Undecidability.L Require Import Util.L_facts Seval.
-From Complexity.L Require Import ComputableTime.
+From Complexity.L Require Import ComputableTime InformativeEval.
 Require Import RelationClasses.
 
 (* * Resource Measures *)
@@ -259,7 +259,6 @@ Proof.
    +intros [(?&?&?) L]. eapply step_timeBS. all:eauto.
 Qed.
 
-(*
 Lemma timeBS_rect (P : nat -> term -> term -> Type)
   (H0 : forall s : term, P 0 (lam s) (lam s))
   (HR : forall (s s' t t' u : term) (i j k l : nat),
@@ -291,7 +290,6 @@ Proof.
    end.
    nia.
 Qed.
- *)
 
 Lemma hasSpaceVal s : hasSpace (size (lam s)) (lam s).
 Proof.
@@ -369,6 +367,3 @@ Lemma hasSpace_step m s s':
 Proof. 
   (* this needs bounded search for come up with m' *)
 Abort.
-    
-
-   

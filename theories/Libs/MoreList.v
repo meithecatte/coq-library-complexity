@@ -1,8 +1,11 @@
-Require Import Undecidability.Shared.Libs.PSL.Base Lia.
-Require Import Arith.
+From Undecidability.Shared Require Import Libs.PSL.Base.
+Require Import Lia Arith.
 
 #[export] Hint Resolve in_eq in_nil in_cons in_or_app : core.
 #[export] Hint Resolve incl_refl incl_tl incl_cons incl_appl incl_appr incl_app incl_nil_l : core.
+
+#[export] Hint Rewrite <- app_assoc : list.
+#[export] Hint Rewrite rev_app_distr map_app prod_length : list.
 
 (* Injectivity of [map], if the function is injective *)
 Lemma map_injective (X Y: Type) (f: X -> Y) :
@@ -52,7 +55,7 @@ Proof.
   induction A;cbn;lia.
 Qed.
 
-Global Hint Rewrite sumn_app : list. 
+#[export] Hint Rewrite sumn_app : list. 
 
 Lemma length_concat X (A : list (list X)) :
   length (concat A) = sumn (map (@length _) A).
@@ -140,4 +143,58 @@ Lemma maxl_rev l: maxl (rev l) = maxl l.
 Proof.
   unfold maxl. rewrite fold_left_rev_right. rewrite fold_symmetric. 2,3:now intros;Lia.lia.
   induction l;cbn;try Lia.lia.
+Qed.
+
+(* TODO: is there a better place for these lemmas? *)
+Lemma Dec_true P {H : dec P} : dec2bool (Dec P) = true -> P.
+Proof.
+  decide P; easy.
+Qed.
+
+Lemma Dec_false P {H : dec P} : dec2bool (Dec P) = false -> ~P.
+Proof.
+  decide P; easy.
+Qed.
+
+Lemma Dec_true' (P : Prop) (d : dec P) : P -> dec2bool (Dec P) = true.
+Proof. intros H. decide P; cbn; tauto. Qed.
+
+Lemma Dec_false' (P : Prop) (d : dec P) : (~ P) -> dec2bool (Dec P) = false.
+Proof. intros H. decide P; cbn; tauto. Qed.
+
+#[export] Hint Extern 4 =>
+match goal with
+  [ H : dec2bool (Dec ?P) = true  |- _ ] => apply Dec_true in  H
+| [ H : dec2bool (Dec ?P) = false |- _ ] => apply Dec_false in H
+| [ |- dec2bool (Dec ?P) = true] => apply Dec_true'
+| [ |- dec2bool (Dec ?P) = false] => apply Dec_false'
+end : core.
+
+#[export]
+Instance list_exists_dec X A (p : X -> Prop) :
+  (forall x, dec (p x)) -> dec (exists x, x el A /\ p x).
+Proof.
+  intros p_dec.
+  destruct (find (fun x => Dec (p x)) A) eqn:Eq. (* New: eta expansion needed *)
+  - apply find_some in Eq as [H0 H1]. firstorder. (* New: Need firstorder here *)
+  - right. intros [x [E F]]. apply find_none with (x := x) in Eq; auto. eauto. (* New: Why can't auto solve this? *)
+Qed.
+
+Lemma cfind X A (p: X -> Prop) (p_dec: forall x, dec (p x)) :
+  {x | x el A /\ p x} + {forall x, x el A -> ~ p x}.
+Proof.
+  destruct (find (fun x => Dec (p x)) A) eqn:E.
+  - apply find_some in E. firstorder.
+  - right. intros. eapply find_none in E; eauto.
+Qed.
+
+Arguments cfind {X} A p {p_dec}.
+Lemma list_cc X (p : X -> Prop) A : 
+  (forall x, dec (p x)) -> 
+  (exists x, x el A /\ p x) -> {x | x el A /\ p x}.
+Proof.
+  intros D E. 
+  destruct (cfind A p) as [[x [F G]]|F].
+  - eauto.
+  - exfalso. destruct E as [x [G H]]. apply (F x); auto.
 Qed.

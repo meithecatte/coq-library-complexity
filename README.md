@@ -9,7 +9,7 @@ This library contains complexity theory formalised in the Coq proof assistant, d
 
 - `Complexity`: basic notions of complexity theory, formulated for the call-by-value lambda calculus `L`
 - `HierarchyTheorem`: the Time Hierarchy Theorem
-- `NP`: NP hardness and completeness proofs 
+- `NP`: NP hardness and completeness proofs
 - `NP/SAT`: the Cook Levin Theorem
 - `L/AbstractMachines`: universal machines for L and their computability and resource analysis
 - `L/TM`: the `L`-computability of Turing machine related concepts
