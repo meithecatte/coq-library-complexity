@@ -12,7 +12,8 @@ theories/Complexity/NP.v
 theories/Complexity/ONotation.v
 theories/Complexity/ONotationIsAppropriate.v
 theories/Complexity/PolyTimeComputable.v
-theories/Complexity/SpaceBoundsTime.v
+theories/Complexity/ResourceMeasures.v
+#theories/Complexity/SpaceBoundsTime.v
 theories/Complexity/Subtypes.v
 theories/Complexity/UpToCPoly.v
 
@@ -59,6 +60,15 @@ theories/L/Datatypes/LTerm.v
 theories/L/Datatypes/LBinNums.v
 theories/L/Datatypes/LComparison.v
 theories/L/Datatypes/LDepPair.v
+theories/L/Datatypes/List/List_enc.v
+theories/L/Datatypes/List/List_eqb.v
+theories/L/Datatypes/List/List_basics.v
+theories/L/Datatypes/List/List_in.v
+theories/L/Datatypes/List/List_fold.v
+theories/L/Datatypes/List/List_nat.v
+theories/L/Datatypes/List/List_extra.v
+theories/L/Datatypes/Lists.v
+theories/L/Functions/EqBool.v
 theories/L/Functions/IterupN.v
 theories/L/Functions/BinNums.v
 theories/L/Functions/BinNumsAdd.v

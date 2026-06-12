@@ -1,5 +1,19 @@
 Require Import Undecidability.Shared.Libs.PSL.Base Lia.
 Require Import Arith.
+
+#[export] Hint Resolve in_eq in_nil in_cons in_or_app : core.
+#[export] Hint Resolve incl_refl incl_tl incl_cons incl_appl incl_appr incl_app incl_nil_l : core.
+
+(* Injectivity of [map], if the function is injective *)
+Lemma map_injective (X Y: Type) (f: X -> Y) :
+  (forall x y, f x = f y -> x = y) ->
+  forall xs ys, map f xs = map f ys -> xs = ys.
+Proof.
+  intros HInj. hnf. intros x1. induction x1 as [ | x x1' IH]; cbn in *.
+  - now intros [|??].
+  - intros [|??]; [easy|]. intros [= E1%HInj E2%IH]. now subst.
+Qed.
+
 (* Nats smaller than n *)
 
 Fixpoint natsLess n : list nat :=

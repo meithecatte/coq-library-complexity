@@ -1,6 +1,6 @@
 From Undecidability.L.Datatypes Require Export LBool.
-From Undecidability.L.Datatypes Require Export LBool.
 From Complexity.L Require Export ComputableTime.
+From Complexity.L Require Import Functions.EqBool.
 
 #[global]
 Instance termT_negb : computableTime' negb (fun _ _ => (4,tt)).
@@ -65,4 +65,29 @@ Proof.
   assert (H':t == Omega).
   {rewrite <- R. apply star_equiv. unfold enc;cbn. etransitivity. now Lbeta. apply step_star. constructor. }
   now rewrite <- H'.
+Qed.
+
+#[global]
+Instance eqbComp_bool : eqbCompT bool.
+Proof.
+  evar (c:nat). exists c. unfold Bool.eqb.
+  unfold enc;cbn.
+  extract.
+  solverec.
+  [c]:exact 3.
+  all:unfold c;try lia.
+Qed.
+
+Lemma eqbTime_le_l X {R : encodable X} (eqb : X -> X -> bool) {H : eqbClass eqb}
+      {H' : eqbCompT X} x n':
+  eqbTime (X:=X) x n' <= x * c__eqbComp X.
+Proof.
+  unfold eqbTime. rewrite Nat.le_min_l. easy.
+Qed.
+
+Lemma eqbTime_le_r X (R : encodable X) (eqb : X -> X -> bool) (H : eqbClass eqb)
+      (eqbCompT : eqbCompT X) x n':
+  eqbTime (X:=X) n' x <= x * c__eqbComp X.
+Proof.
+  unfold eqbTime. rewrite Nat.le_min_r. easy.
 Qed.

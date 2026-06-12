@@ -1,6 +1,5 @@
-From Complexity.L.Datatypes Require Import LNat LSum LTerm LOptions.
+From Complexity.L.Datatypes Require Import LNat LSum LTerm LOptions Lists.
 From Complexity.L Require Import Functions.Decoding ComputableTime.
-(* TODO: port LTDlist *)
 
 Class linTimeDecodable `(X:Type) `{decodable X}: Type :=
   {
@@ -70,3 +69,12 @@ Proof.
   [c]: exact (max (max (c__linDec X) (c__linDec Y)) 14). all: unfold c; try nia. 
 Qed. 
 
+Global Instance linDec_list X `{_:linTimeDecodable X}: linTimeDecodable (list X).
+Proof.
+  evar (c:nat). exists c.
+  unfold decode,decode_list,list_decode;cbn.
+  extract.
+  recRel_prettify2;cbn[size];ring_simplify.
+  [c]:exact (max (c__linDec X) 12).
+  all:unfold c;try nia.
+Qed.

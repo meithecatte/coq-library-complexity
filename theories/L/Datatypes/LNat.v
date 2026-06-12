@@ -3,13 +3,41 @@
    machinery are still in effect after this file gets imported. *)
 From Undecidability.L.Datatypes Require Export LNat.
 From Complexity.L.Datatypes Require Import LProd.
+From Complexity.L Require Import Functions.EqBool.
 From Complexity.L Require Export ComputableTime.
 Require Import Nat.
 
+(* constructors *)
 #[global]
 Instance termT_S : computableTime' S (fun _ _ => (1,tt)).
 Proof.
   extract constructor. solverec.
+Qed.
+
+(* encoding size *)
+Definition c__natsizeO := 4.
+Definition c__natsizeS := 4.
+Lemma size_nat_enc (n:nat) :
+  size (enc n) = n * c__natsizeS + c__natsizeO.
+Proof.
+  unfold c__natsizeS, c__natsizeO. 
+  induction n;cbv [enc encodable_nat_enc] in *. all:cbn [size nat_enc] in *. all:solverec.
+Qed.
+
+Lemma size_nat_enc_r (n:nat) :
+  n <= size (enc n).
+Proof.
+    induction n;cbv [enc encodable_nat_enc] in *. all:cbn [size nat_enc] in *. all:solverec.
+Qed.
+
+Lemma nat_size_lt a b: a < b -> size (enc a) < size (enc b). 
+Proof. 
+  intros H. rewrite !size_nat_enc. unfold c__natsizeS; nia. 
+Qed.
+
+Lemma nat_size_le a b: a <= b -> size (enc a) <= size (enc b). 
+Proof. 
+  intros H. rewrite !size_nat_enc. unfold c__natsizeS; nia. 
 Qed.
 
 #[global]
@@ -43,12 +71,13 @@ Definition c__sub1 := 5.
 Definition c__sub := 14. 
 Definition sub_time x y := (min x y + 1) * c__sub.
 #[global]
-Instance term_sub : computableTime' Nat.sub (fun n _ => (c__sub1,fun m _ => (sub_time n m ,tt)) ).
+Instance termT_sub : computableTime' Nat.sub (fun n _ => (c__sub1,fun m _ => (sub_time n m ,tt)) ).
 Proof.
   extract. solverec.
   all: unfold sub_time, c__sub1, c__sub; solverec. 
 Qed.
 
+(* leb *)
 Definition c__leb := 14.
 Definition c__leb2 := 5. 
 Definition leb_time (x y : nat) := c__leb * (1 + min x y).
@@ -59,16 +88,46 @@ Proof.
   solverec. all: unfold leb_time, c__leb, c__leb2; solverec. 
 Qed.
 
+Lemma leb_time_bound_l a b: leb_time a b <= (size(enc a) + 1) * c__leb. 
+Proof. 
+  unfold leb_time. rewrite Nat.le_min_l. rewrite size_nat_enc_r with (n := a) at 1. lia.
+Qed. 
+
+Lemma leb_time_bound_r a b : leb_time a b <= (size(enc b) + 1) * c__leb. 
+Proof. 
+  unfold leb_time. rewrite Nat.le_min_r. rewrite size_nat_enc_r with (n:= b) at 1. lia. 
+Qed. 
+
+(* ltb *)
 Definition c__ltb := c__leb2 + 4.
 Definition ltb_time (a b : nat) := leb_time (S a) b + c__ltb. 
 #[global]
-Instance term_ltb : computableTime' Nat.ltb (fun a _ => (1, fun b _ => (ltb_time a b, tt))). 
+Instance termT_ltb : computableTime' Nat.ltb (fun a _ => (1, fun b _ => (ltb_time a b, tt))). 
 Proof. 
   extract. recRel_prettify2. 
   - lia. 
   - unfold ltb_time, c__ltb. solverec. 
 Qed.
 
+(* eqb *)
+#[global]
+Instance eqbNat_inst : eqbClass Nat.eqb.
+Proof.
+  exact Nat.eqb_spec. 
+Qed.
+
+#[global]
+Instance eqbComp_nat : eqbCompT nat.
+Proof.
+  evar (c:nat). exists c. unfold Nat.eqb.
+  unfold enc;cbn.
+  extract.
+  solverec.
+  [c]:exact 5.
+  all:unfold c;try lia.
+Qed.
+
+(* sqrt *)
 Definition c__sqrt_iter := 5.
 Definition sqrt_iter_time (k p q r: nat) := 4 + 20 * k.
 #[global] Instance termT_sqrt_iter:
@@ -140,18 +199,3 @@ Proof.
   - unfold modulo_time, c__modulo; solverec. 
   - unfold sub_time. rewrite Nat.le_min_l. unfold modulo_time, c__modulo. solverec. 
 Qed. 
-
-Definition c__natsizeO := 4.
-Definition c__natsizeS := 4.
-Lemma size_nat_enc (n:nat) :
-  size (enc n) = n * c__natsizeS + c__natsizeO.
-Proof.
-  unfold c__natsizeS, c__natsizeO. 
-  induction n;cbv [enc encodable_nat_enc] in *. all:cbn [size nat_enc] in *. all:solverec.
-Qed.
-
-Lemma size_nat_enc_r (n:nat) :
-  n <= size (enc n).
-Proof.
-    induction n;cbv [enc encodable_nat_enc] in *. all:cbn [size nat_enc] in *. all:solverec.
-Qed.

@@ -1,5 +1,4 @@
 Require Import Complexity.L.ComputableTime.
-From Undecidability.L.Tactics Require Import LTactics GenEncode.
 
 Section sig.
   Context {A : Type} {reg_A : encodable A} {P: A -> Prop}.

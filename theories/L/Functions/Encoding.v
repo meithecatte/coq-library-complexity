@@ -1,6 +1,4 @@
-(*From Complexity.L.Datatypes Require Import LNat LTerm LBool LProd List.List_enc LOptions.
- *)
-From Complexity.L.Datatypes Require Import LNat LTerm LBool LProd LOptions.
+From Complexity.L.Datatypes Require Import LNat LTerm LBool LProd List.List_enc LOptions.
 From Complexity.L Require Import ComputableTime.
 
 (* ** Extracted encoding of natural numbers *)
@@ -38,8 +36,6 @@ Proof.
 Qed.
 
 
-(* TODO: Lists. *)
-(*
 #[global]
 Instance term_list_enc X (R:encodable X) t__X 
          `{computableTime' (@enc X _) t__X} 
@@ -48,7 +44,6 @@ Proof.
   unfold enc;cbn.
   extract. solverec.
 Qed.
- *)
 
 #[global]
 Instance term_option_enc X (R:encodable X) t__X 

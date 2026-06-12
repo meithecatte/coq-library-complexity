@@ -58,9 +58,7 @@ Proof.
   cbn. [c]:exact (c__regP X + c__regP Y + 4). unfold c. nia.
 Qed.
 
-(* TODO: Lists *)
-(*
-From Undecidability.L.Datatypes Require Import Lists.
+From Complexity.L.Datatypes Require Import Lists.
 
 #[export]
 Instance regP_list X `{encodableP X}: encodableP (list X).
@@ -75,7 +73,6 @@ Proof.
   cbn. [c]:exact (c__regP X + 17). unfold c, c__listsizeCons, c__listsizeNil.
   induction l;cbn. all:nia.
 Qed.
- *)
 
 #[export]
 Instance regP_option X `{encodableP X}: encodableP (option X).

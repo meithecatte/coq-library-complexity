@@ -1,4 +1,5 @@
-From Undecidability.L Require Import L_facts Complexity.ResourceMeasures AbstractMachines.FlatPro.Programs.
+From Complexity Require Import Complexity.ResourceMeasures.
+From Undecidability.L Require Import L_facts AbstractMachines.FlatPro.Programs.
 Require Import Undecidability.Shared.Libs.PSL.Lists.BaseLists.
 Require Import ListDec.
 

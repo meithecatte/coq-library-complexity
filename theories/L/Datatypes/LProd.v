@@ -1,6 +1,6 @@
-From Undecidability.L Require Import Functions.EqBool.
 From Undecidability.L.Datatypes Require Export LProd.
 From Complexity.L Require Import ComputableTime.
+From Complexity.L Require Import Datatypes.LBool Functions.EqBool.
 
 (* ** Encoding of pairs *)
 
@@ -27,7 +27,6 @@ Section Fix_XY.
   Qed.
 
   
-  (*
   Global Instance eqbComp_Prod `{eqbCompT X (R:=intX)} `{eqbCompT Y (R:=intY)}:
     eqbCompT (X*Y).
   Proof.
@@ -41,7 +40,6 @@ Section Fix_XY.
     all:unfold c. 
     cbn [size]. nia.
   Qed.
-   *)
 
 
   (*
