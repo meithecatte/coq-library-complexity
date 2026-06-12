@@ -840,6 +840,12 @@ Ltac extractSimple ::=
 
 Ltac cstep ::= cstepTime extractSimple.
 
+Ltac infer_instances ::=
+  repeat match goal with
+         | [ |- context [ int_ext ?t ] ] => first [change (int_ext t) with (ext t) | fail 3 "Could not fold int-instance for " t]
+         | [ |- context [ extT ?t ] ] => first [change (extT t) with (ext t) | fail 3 "Could not fold int-instance for " t]
+         end.
+
 Ltac infer_instancesT :=
   repeat match goal with
          | [ |- context [ int_ext ?t ] ] => first [change (int_ext t) with (extT t) | fail 3 "Could not fold extT-instance for " t]

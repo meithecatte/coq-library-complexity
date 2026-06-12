@@ -76,6 +76,9 @@ theories/L/Functions/BinNumsSub.v
 theories/L/Functions/BinNumsCompare.v
 theories/L/Functions/Encoding.v
 theories/L/Functions/Decoding.v
+theories/L/Functions/LoopSum.v
+theories/L/Functions/UnboundedIteration.v
+theories/L/Functions/Size.v
 
 theories/L/TM/TMflat.v
 theories/L/TM/CompCode.v
@@ -90,6 +93,7 @@ theories/L/TM/TMflatten.v
 theories/Libs/PSLCompat.v
 theories/Libs/MoreBase.v
 theories/Libs/MoreList.v
+theories/Libs/LoopSum.v
 theories/Libs/ARS.v
 theories/Libs/GenericNary.v
 theories/Libs/UpToC.v

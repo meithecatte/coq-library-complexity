@@ -146,8 +146,9 @@ Proof.
 Qed.
 
 Lemma polyTimeComputable_compTime X Y `{encodable X} `{encodable Y} (f: X -> Y):
-  polyTimeComputable f -> exists H : polyTimeComputable f, inhabited (polyTimeComputable (time__polyTC H))
-                                                     /\ inhabited (polyTimeComputable (resSize__rSP H)).
+  polyTimeComputable f -> exists H : polyTimeComputable f,
+        inhabited (polyTimeComputable (time__polyTC H))
+     /\ inhabited (polyTimeComputable (resSize__rSP H)).
 Proof.
   intros R__spec. destruct (inOPoly_computable (poly__polyTC R__spec)) as (p'&[?]&Hbounds&?&?).
   destruct (resSizePoly_compSize R__spec) as (?&[]).
