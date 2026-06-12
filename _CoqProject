@@ -19,7 +19,6 @@ theories/Complexity/UpToCPoly.v
 theories/HierarchyTheorem/AbstractTimeHierarchyTheorem.v
 theories/HierarchyTheorem/TimeHierarchyTheorem.v
 
-theories/L/Prelim/ARS.v
 theories/L/ComputableTime.v
 theories/L/ComparisonTimeBoundDerivation.v
 
@@ -81,6 +80,7 @@ theories/L/TM/TMflatten.v
 theories/Libs/PSLCompat.v
 theories/Libs/MoreBase.v
 theories/Libs/MoreList.v
+theories/Libs/ARS.v
 
 
 theories/Libs/Pigeonhole.v

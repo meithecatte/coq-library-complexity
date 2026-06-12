@@ -1,6 +1,5 @@
 Require Import MetaCoq.Template.All Strings.Ascii.
-From Complexity.L Require Export Prelim.ARS.
-From Complexity.Libs Require Export MoreBase.
+From Complexity.Libs Require Export MoreBase ARS.
 From Undecidability.L.Tactics Require Export Computable ComputableTactics.
 From Undecidability.L.Tactics Require Export Lproc Lsimpl Lbeta Lrewrite.
 Import L_Notations.
