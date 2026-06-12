@@ -1,6 +1,9 @@
+(* Note: Undecidability's LNat exports LTactics. This means we must export
+   ComputableTime to make sure that its overrides of parts of the extraction
+   machinery are still in effect after this file gets imported. *)
 From Undecidability.L.Datatypes Require Export LNat.
 From Complexity.L.Datatypes Require Import LProd.
-From Complexity.L Require Import ComputableTime.
+From Complexity.L Require Export ComputableTime.
 Require Import Nat.
 
 #[global]

@@ -81,8 +81,9 @@ theories/Libs/PSLCompat.v
 theories/Libs/MoreBase.v
 theories/Libs/MoreList.v
 theories/Libs/ARS.v
-
-
+theories/Libs/GenericNary.v
+theories/Libs/UpToC.v
+theories/Libs/UpToCNary.v
 theories/Libs/Pigeonhole.v
 theories/Libs/UniformHomomorphisms.v
 theories/Libs/CookPrelim/PolyBounds.v
