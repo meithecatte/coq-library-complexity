@@ -1,5 +1,8 @@
+(* Note: Undecidability's LProd exports LTactics. This means we must export
+   ComputableTime to make sure that its overrides of parts of the extraction
+   machinery are still in effect after this file gets imported. *)
 From Undecidability.L.Datatypes Require Export LProd.
-From Complexity.L Require Import ComputableTime.
+From Complexity.L Require Export ComputableTime.
 From Complexity.L Require Import Datatypes.LBool Functions.EqBool.
 
 (* ** Encoding of pairs *)
