@@ -91,3 +91,11 @@ Proof.
   - lia.
   - unfold concat_time in IHl. rewrite IHl. lia.
 Qed.
+
+Lemma concat_time_exp' (X : Type) (l : list (list X)):
+  concat_time l = (sumn (map (fun l' => length l') l) + |l| + 1) * c__concat.
+Proof.
+  induction l; cbn -[Nat.add Nat.mul].
+  - lia.
+  - unfold concat_time in IHl. rewrite IHl. lia.
+Qed.

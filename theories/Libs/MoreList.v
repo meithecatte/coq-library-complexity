@@ -17,6 +17,17 @@ Proof.
   - intros [|??]; [easy|]. intros [= E1%HInj E2%IH]. now subst.
 Qed.
 
+(* allows rewriting under binder of map *)
+#[export]
+Instance map_ext_proper A B: Proper (@ pointwise_relation A B (@eq B) ==> (@eq (list A)) ==> (@eq (list B))) (@map A B).
+Proof.
+  intros f f' Hf a ? <-. induction a;cbn;congruence.
+Qed.
+
+Lemma app_comm_cons' (A : Type) (x y : list A) (a : A) :
+  x ++ a :: y = (x ++ [a]) ++ y.
+Proof. rewrite <- app_assoc. cbn. trivial. Qed.
+
 (* Nats smaller than n *)
 
 Fixpoint natsLess n : list nat :=
@@ -197,4 +208,26 @@ Proof.
   destruct (cfind A p) as [[x [F G]]|F].
   - eauto.
   - exfalso. destruct E as [x [G H]]. apply (F x); auto.
+Qed.
+
+(* ** Lemmas about [hd], [tl] and [removelast] *)
+
+Lemma tl_map (A B: Type) (f: A -> B) (xs : list A) :
+  tl (map f xs) = map f (tl xs).
+Proof. now destruct xs; cbn. Qed.
+
+(* Analogous to [removelast_app] *)
+Lemma tl_app (A: Type) (xs ys : list A) :
+  xs <> nil ->
+  tl (xs ++ ys) = tl xs ++ ys.
+Proof. destruct xs; cbn; congruence. Qed.
+
+Lemma tl_rev (A: Type) (xs : list A) :
+  tl (rev xs) = rev (removelast xs).
+Proof.
+  induction xs; cbn; auto.
+  destruct xs; cbn in *; auto.
+  rewrite tl_app; cbn in *.
+  - now rewrite IHxs.
+  - intros (H1&H2) % app_eq_nil; inv H2.
 Qed.

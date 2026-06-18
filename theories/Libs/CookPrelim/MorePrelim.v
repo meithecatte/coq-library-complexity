@@ -163,6 +163,7 @@ Smpl Add (apply rev_involution) : involution.
 Definition prefix (X : Type) (a b : list X) := exists b', b = a ++ b'.
 Definition substring (X : Type) (a b : list X) := exists b1 b2, b = b1 ++ a ++ b2. 
 
+(* ** Lemmas about [firstn] and [skipn] *)
 Lemma map_skipn (A B : Type) (f : A -> B) (l : list A) (n : nat) : map f (skipn n l) = skipn n (map f l). 
 Proof. 
   induction n as [ | n] in l |-*; cbn; [reflexivity | destruct l as [ | x l]]; cbn; firstorder. 
@@ -227,7 +228,6 @@ Proof.
   - now rewrite !firstn_nil. 
   - destruct i; cbn; [reflexivity | now rewrite IHh].
 Qed.
-
 
 Lemma length_app_decompose (X : Type) (a : list X) i j : length a = i + j -> exists a1 a2, a = a1 ++ a2 /\ length a1 = i /\ length a2 = j. 
 Proof. 

@@ -1,5 +1,8 @@
 From Complexity.Complexity Require Import NP Definitions Monotonic.
 
+(* [X__cert] encodes generic certificates (L-terms). More precisely, we have
+ * a polynomial-time surjection onto [term] that additionally is *not wasteful*:
+ * the encoding is at most polynomially bigger than the term itself *)
 Record canEnumTerms (X__cert : Type) `{R__cert : encodable X__cert} : Type :=
   {
     f__toTerm : X__cert -> term;
